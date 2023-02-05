@@ -1,5 +1,6 @@
 const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
+const { v1: uuid } = require('uuid')
 
 let authors = [
   {
@@ -102,40 +103,38 @@ const typeDefs = `
   }
 
   type Book {
-    title: String
-    published: Int
-    author: String
-    genres: [String]
-    id: ID
+    title: String!
+    published: Int!
+    author: String!
+    genres: [String!]!
+    id: ID!
   }
 
   type Author {
-    name: String
-    bookCount: Int
+    name: String!
+    bookCount: Int!
+    born: Int
   }
+
 `
 
 const resolvers = {
   Query: {
     bookCount: () => books.length,
     authorCount: () => authors.length,
-    allBooks: (root, args) =>
-
-      {
-        console.log('all')
-        console.log({ args })
-        if (args.author && args.genre) {
-          return books.filter(
-            (b) => b.author === args.author && b.genres.includes(args.genre)
-          )
-        } else if (args.author) {
-          return books.filter((b) => b.author === args.author)
-        } else if (args.genre) {
-          return books.filter((b) => b.genres.includes(args.genre))
-        } else {
-          return books
-        }
-      },
+    allBooks: (root, args) => {
+      if (args.author && args.genre) {
+        return books.filter(
+          (b) => b.author === args.author && b.genres.includes(args.genre)
+        )
+      } else if (args.author) {
+        return books.filter((b) => b.author === args.author)
+      } else if (args.genre) {
+        return books.filter((b) => b.genres.includes(args.genre))
+      } else {
+        return books
+      }
+    },
     allAuthors: () => authors,
   },
   Author: {
